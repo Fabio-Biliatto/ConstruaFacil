@@ -75,4 +75,9 @@ public class comprarCursoCS {
         System.out.println("6 - Confirmou o nome como " + curso + " e o preco do curso como " + preco);
 
     }
+
+    @E("^pressiono Enter$")
+    public void pressionoEnter() {
+        driver.findElement(By.id("searchtext")).sendKeys(Keys.ENTER);
+    }
 }
