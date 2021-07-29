@@ -9,7 +9,11 @@ import cucumber.api.java.pt.Quando;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +22,7 @@ import static org.testng.Assert.assertEquals;
 public class comprarCursoCS {
 
     WebDriver driver;
+    WebDriverWait wait;
 
     @Before
     public void iniciar(){
@@ -25,6 +30,8 @@ public class comprarCursoCS {
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(60000, TimeUnit.MILLISECONDS);
         driver.manage().window().maximize();// Maximizar a janela
+
+        wait = new WebDriverWait(driver, 60); // espera até 60 segundos
 
         System.out.println("0 - Antes do Teste iniciar");
     }
@@ -57,10 +64,13 @@ public class comprarCursoCS {
     }
 
     @Entao("^vejo a lista de resultados para o curso \"([^\"]*)\"$")
-    public void vejoAListaDeResultadosParaOCurso(String curso)  {
-        assertEquals(driver.findElement(By.cssSelector("h3")).getText(),"Cursos › \"" + curso + "\"");
+    public void vejoAListaDeResultadosParaCurso(String curso) {
+        String textoesperado = "Cursos › \"" + curso + "\"";
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("h3:nth-child(1)"),textoesperado));
+        assertEquals(driver.findElement(By.cssSelector("h3:nth-child(1)")).getText(),textoesperado);
         System.out.println("4 - Exibiu a lista de resultados para o curso " + curso);
     }
+
 
     @Quando("^clico em Matricule-se$")
     public void clicoEmMatriculeSe() {
@@ -79,5 +89,21 @@ public class comprarCursoCS {
     @E("^pressiono Enter$")
     public void pressionoEnter() {
         driver.findElement(By.id("searchtext")).sendKeys(Keys.ENTER);
+    }
+
+    @Quando("^clico na imagem de um curso$")
+    public void clicoNaImagemDeUmCurso() {
+        driver.findElement(By.cssSelector("span.mais")).click();
+    }
+
+    @Entao("^vejo a pagina com detalhes do curso$")
+    public void vejoAPaginaComDetalhesDoCurso() {
+        wait.until(ExpectedConditions.titleIs("Mantis - Iterasys"));
+        assertEquals(driver.getTitle(), "Mantis - Iterasys");
+    }
+
+    @E("^clico no botao Ok do popup da LGPD$")
+    public void clicoNoBotaoOkDoPopupDaLGPD() {
+        driver.findElement(By.cssSelector("a.cc-btn.cc-dismiss")).click();
     }
 }
